@@ -34,7 +34,7 @@ def load_user(user_id):
 # #CONFIGURE TABLES
 
 class User(UserMixin, db.Model):
-    __tablename__ = "user"
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(250), unique=True)
     password = db.Column(db.String(250))
@@ -49,7 +49,7 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # Create foreign key, "users.id" the users refers to the table name of the user.
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # Create reference to the User object, the "posts" refers to the posts property in the user class.
     author = relationship("User", back_populates="posts")
 
@@ -65,7 +65,7 @@ class BlogPost(db.Model):
 class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comment_author = relationship("User", back_populates="comments")
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
     parent_post = relationship("BlogPost", back_populates="comments")
@@ -204,7 +204,7 @@ def add_new_post():
     return render_template("make-post.html", form=form, current_user=current_user)
 
 
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
 @admin_only
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
@@ -219,7 +219,6 @@ def edit_post(post_id):
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
