@@ -157,7 +157,9 @@ def show_post(post_id):
             flash("You need to login or register to comment.")
             return redirect(url_for("login"))
         new_comment = Comment(
-            text=form.comment_text.data
+            text=form.comment_text.data,
+            comment_author=current_user,
+            parent_post=requested_post
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -233,6 +235,11 @@ def delete_post(post_id):
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('get_all_posts'))
+
+
+@app.route("/test")
+def test():
+    return render_template("test.html")
 
 
 if __name__ == "__main__":
