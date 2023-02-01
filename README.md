@@ -20,3 +20,8 @@ pip install wtforms
 
 ```
 
+## Author
+
+```bash
+Jeffrey Jeremiah
+```
